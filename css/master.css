@@ -1,0 +1,14 @@
+body{
+	display: flex;
+	flex-direction: column;
+}
+
+canvas{
+	background: RGBA(34, 45, 52, 1.00);
+	margin: auto;
+}
+
+button{
+	width:10em;
+	margin: 2em auto;
+}
