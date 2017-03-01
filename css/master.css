@@ -12,3 +12,9 @@ button{
 	width:10em;
 	margin: 2em auto;
 }
+
+#div_rules{
+	display: none;
+	width: 80vw;
+	margin: auto;
+}
