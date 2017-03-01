@@ -1,11 +1,13 @@
 const GRILLE_Y = 60;
 const GRILLE_X = 30;
 const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
-var cadre, gamezone, position;
+var cadre;
+var gamezone;
+var position;
 
 function main (arguments) {
-	gamezone = cadre.getContext("2d");
 	cadre = document.getElementById('gamezone');
+	gamezone = cadre.getContext("2d");
 
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function () {
@@ -21,7 +23,7 @@ function main (arguments) {
 				bouger(e);
 	});
 
-	position = [x: 0, y: 0]; //la position de la tête du serpent
+	position = {x: 0, y: 0}; //la position de la tête du serpent
 
 }
 
@@ -71,4 +73,6 @@ function redraw() {
 
 function placerPomme(){
 	var pommeY = math.floor(Math.random() * (GRILLE_Y));
+	var pommeX = math.floor(Math.random() * (GRILLE_X));
+	grille[pommeX][pommeY]= "pomme";
 }
