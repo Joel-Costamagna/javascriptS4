@@ -3,6 +3,7 @@ const GRILLE_X = 30;
 const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
 var cadre;
 var gamezone;
+var serpent;
 var position;
 
 function main (arguments) {
@@ -23,8 +24,8 @@ function main (arguments) {
 				bouger(e);
 	});
 
-	position = {x: 0, y: 0}; //la position de la tête du serpent
-
+	position = {x: 0, y: 0};
+	serpent = 
 }
 
 
@@ -36,6 +37,7 @@ function bouger(event) {
 			if(position.x-1 > 0){
 				position.x--;
 			}
+			collisionPomme();
 			break;
 
 		case 90:
@@ -44,6 +46,7 @@ function bouger(event) {
 			if (position.y+1 < GRILLE_Y-1) {
 				position.y++;
 			}
+			collisionPomme();
 			break;
 
 		case 68:
@@ -52,6 +55,7 @@ function bouger(event) {
 			if (position.x+1 < GRILLE_X-1) {
 				position.x++;
 			}
+			collisionPomme();
 			break;
 
 		case 83:
@@ -60,6 +64,7 @@ function bouger(event) {
 			if (position.y-1 > 0) {
 				position.y--;
 			}
+			collisionPomme();
 			break;
 		default:
 			alert("utilisez ZQSD pour se déplacer");
@@ -68,11 +73,26 @@ function bouger(event) {
 
 
 function redraw() {
-
 }
 
 function placerPomme(){
-	var pommeY = math.floor(Math.random() * (GRILLE_Y));
+	var pomme.x = math.floor(Math.random() * (GRILLE_Y));
 	var pommeX = math.floor(Math.random() * (GRILLE_X));
 	grille[pommeX][pommeY]= "pomme";
 }
+
+function collisionPomme(){
+	if(grille[position.x][position.y] == "pomme"){
+		grille[position.x][position.y] = false;
+		placerPomme();
+		agrandirSerpent();
+	}
+}
+
+function agrandirSerpent(direction){
+	//TODO
+	serpent.taille++;
+	positionQueue
+}
+
+//tete = 10*10px et le corps
