@@ -5,10 +5,15 @@ var cadre;
 var gamezone;
 var position;
 
-function main (arguments) {
+
+
+function main () {
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
-
+	//la gamezone fait la taille de la grille;
+	cadre.style.width=GRILLE_X*15;
+	cadre.style.height=GRILLE_Y*15;
+	dessinerGrille();
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function () {
 		if(document.getElementById('div_rules').style.display == "none"){
@@ -25,6 +30,24 @@ function main (arguments) {
 
 	position = {x: 0, y: 0}; //la position de la tête du serpent
 
+}
+
+/**
+ * dessine la grille sur le canvas, avec des cases de 15*15
+ */
+function dessinerGrille () {
+	gamezone.strokeStyle="#000";
+	for (var x = 0; x < GRILLE_X*15; x+=15) {
+		console.log("ligneX");
+		gamezone.moveTo(x, 0);
+		gamezone.lineTo(x, GRILLE_Y*15);
+	}
+
+	for (var y = 0; y < GRILLE_Y*15; y+=15) {
+		gamezone.moveTo(0, y);
+		gamezone.lineTo(GRILLE_X*15, y);
+	}
+	gamezone.stroke();
 }
 
 
