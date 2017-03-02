@@ -152,15 +152,13 @@ function redraw() {
 
 
 function placerPomme(){
-	pommeY= Math.floor(Math.random() * (GRILLE_Y));
-	pommeX = Math.floor(Math.random() * (GRILLE_X));
+	pommeY= Math.floor(Math.random() *GRILLE_Y);
+	pommeX = Math.floor(Math.random() *GRILLE_X);
+	console.log(pommeY);
+	console.log(pommeX);
 	grille[pommeX][pommeY] = "pomme";
 	var imgPomme = document.getElementById('pom');
-	gamezone.drawImage(imgPomme, pommeX, pommeY);
-	console.log(imgPomme);
-	pomme.onload = function (arg){
-  		gamezone.drawImage(pomme, pommeX, pommeY);
-	}
+	gamezone.drawImage(imgPomme, pommeX*15, pommeY*15);
 }
 
 
