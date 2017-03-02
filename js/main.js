@@ -1,9 +1,9 @@
 const GRILLE_Y = 30;
 const GRILLE_X = 60;
-const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
+var grille = new Array(GRILLE_X).fill(new Array(GRILLE_Y)); //la grille dans laquelle se déplace Jacques
 var cadre;
 var gamezone;
-var serpent;
+var jacques;
 
 function main () {
 	cadre = document.getElementById('gamezone');
@@ -26,7 +26,8 @@ function main () {
 				bouger(e);
 	});
 
-	serpent = new Serpent();
+	jacques = new serpent();
+	placerPomme();
 }
 
 /**
@@ -52,9 +53,9 @@ function bouger(event) {
 		case 81:
 		case 37:
 			//alert("vous allez à gauche");
-			if(Serpent.tete.x-1 > 0){
-				Serpent.tete.x--;
-				Serpent.tete.direction="GAUCHE";
+			if(jacques.tete.x-1 > 0){
+				jacques.tete.x--;
+				jacques.tete.direction="GAUCHE";
 			}else {
 				mourir();
 			}
@@ -64,8 +65,8 @@ function bouger(event) {
 		case 90:
 		case 38:
 			//alert("vous allez en haut");
-			if (Serpent.tete.y+1 < GRILLE_Y-1) {
-				Serpent.tete.y++;
+			if (jacques.tete.y+1 < GRILLE_Y-1) {
+				jacques.tete.y++;
 			}else {
 				mourir();
 			}
@@ -75,8 +76,8 @@ function bouger(event) {
 		case 68:
 		case 39:
 			//alert("vous allez à droite");
-			if (Serpent.tete.x+1 < GRILLE_X-1) {
-				Serpent.tete.x++;
+			if (jacques.tete.x+1 < GRILLE_X-1) {
+				jacques.tete.x++;
 			}else {
 				mourir();
 			}
@@ -86,8 +87,8 @@ function bouger(event) {
 		case 83:
 		case 40:
 			//alert("vous allez en bas");
-			if (position.tete.y-1 > 0) {
-				position.tete.y--;
+			if (jacques.tete.y-1 > 0) {
+				jacques.tete.y--;
 			}else {
 				mourir();
 			}
@@ -103,50 +104,54 @@ function Position(x, y, direction){
 	this.y = y;
 	this.direction = direction;
 
-	this.agrandir = function (){
-		serpent.taille++;
-		switch (serpent.queue.direction) {
-			case "HAUT":
-				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y-1, "HAUT"));
-			break;
 
-			case "DROITE":
-				serpent.positions.push(new Position(serpent.queue.x-1, serpent.queue.y, "DROITE"));
-			break;
-
-			case "BAS":
-				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y+1, "BAS"));
-			break;
-
-			case "GAUCHE":
-				serpent.positions.push(new Position(serpent.queue.x+1, serpent.queue.y, "GAUCHE"));
-			break;
-		}
-	}
 }
 
-function Serpent(){
+function serpent(){
 	this.tete = new Position(0,0,"DROITE");
 	this.queue = new Position(0,0,"DROITE");
 	this.taille = 1;
 	this.positions = [];
 	this.positions.push(this.tete);
+	this.agrandir = function (){
+		this.taille++;
+		switch (this.queue.direction) {
+			case "HAUT":
+				this.positions.push(new Position(this.queue.x, this.queue.y-1, "HAUT"));
+			break;
+
+			case "DROITE":
+				this.positions.push(new Position(this.queue.x-1, this.queue.y, "DROITE"));
+			break;
+
+			case "BAS":
+				this.positions.push(new Position(this.queue.x, this.queue.y+1, "BAS"));
+			break;
+
+			case "GAUCHE":
+				this.positions.push(new Position(this.queue.x+1, this.queue.y, "GAUCHE"));
+			break;
+		}
+	}
 }
+
 
 function redraw() {
+
 }
 
+
 function placerPomme(){
-	pomme.y = math.floor(Math.random() * (GRILLE_Y));
-	pomme.x = math.floor(Math.random() * (GRILLE_X));
+	pommeY = Math.floor(Math.random() * (GRILLE_Y));
+	pommeX = Math.floor(Math.random() * (GRILLE_X));
 	grille[pommeX][pommeY]= "pomme";
 }
 
 function collisionPomme(){
-	if(grille[serpent.tete.x][serpent.tete.y] == "pomme"){
-		grille[serpent.tete.x][serpent.tete.y] = false;
+	if(grille[jacques.tete.x][jacques.tete.y] == "pomme"){
+		grille[jacques.tete.x][jacques.tete.y] = false;
 		placerPomme();
-		serpent.agrandir();
+		jacques.agrandir();
 	}
 }
 
