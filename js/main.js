@@ -145,9 +145,9 @@ function placerPomme(){
 	pommeY= Math.floor(Math.random() * (GRILLE_Y));
 	pommeX = Math.floor(Math.random() * (GRILLE_X));
 	grille[pommeX][pommeY] = "pomme";
-	var pomme = new Image();
-	pomme.src = '../images/Pomme.png';
-  	gamezone.drawImage(pomme, pommeX, pommeY);
+	var imgPomme = document.getElementById('pom');
+	gamezone.drawImage(imgPomme, pommeX, pommeY);
+	console.log(imgPomme);
 }
 	
 
