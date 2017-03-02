@@ -1,23 +1,16 @@
-const GRILLE_Y = 60;
-const GRILLE_X = 30;
+const GRILLE_Y = 30;
+const GRILLE_X = 60;
 const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
 var cadre;
 var gamezone;
 var serpent;
-var position;
-
-
 
 function main () {
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
 	//la gamezone fait la taille de la grille;
-	let x = GRILLE_X*15;
-	let y = GRILLE_Y*15;
-	console.log(x);
-	console.log(x.toString());
-	cadre.style.width = x.toString();
-	cadre.style.height = y.toString();
+	cadre.style.width = GRILLE_X * 15 + "px";
+	cadre.style.height = GRILLE_Y* 15 + "px";
 	dessinerGrille();
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function () {
@@ -33,7 +26,7 @@ function main () {
 				bouger(e);
 	});
 
-	position = {x: 0, y: 0};
+	serpent = new Serpent();
 }
 
 /**
@@ -43,12 +36,12 @@ function dessinerGrille () {
 	gamezone.strokeStyle="#000";
 	for (var x = 0; x < GRILLE_X*15; x+=15) {
 		gamezone.moveTo(x, 0);
-		gamezone.lineTo(x, GRILLE_X*15);
+		gamezone.lineTo(x, GRILLE_Y*15);
 	}
 
 	for (var y = 0; y < GRILLE_Y*15; y+=15) {
 		gamezone.moveTo(0, y);
-		gamezone.lineTo(GRILLE_Y*15, y);
+		gamezone.lineTo(GRILLE_X*15, y);
 	}
 	gamezone.stroke();
 }
@@ -105,6 +98,40 @@ function bouger(event) {
 	}
 }
 
+function Position(x, y, direction){
+	this.x = x;
+	this.y = y;
+	this.direction = direction;
+
+	this.agrandir = function (){
+		serpent.taille++;
+		switch (serpent.queue.direction) {
+			case "HAUT":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y-1, "HAUT"));
+			break;
+
+			case "DROITE":
+				serpent.positions.push(new Position(serpent.queue.x-1, serpent.queue.y, "DROITE"));
+			break;
+
+			case "BAS":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y+1, "BAS"));
+			break;
+
+			case "GAUCHE":
+				serpent.positions.push(new Position(serpent.queue.x+1, serpent.queue.y, "GAUCHE"));
+			break;
+		}
+	}
+}
+
+function Serpent(){
+	this.tete = new Position(0,0,"DROITE");
+	this.queue = new Position(0,0,"DROITE");
+	this.taille = 1;
+	this.positions = [];
+	this.positions.push(this.tete);
+}
 
 function redraw() {
 }
@@ -116,17 +143,11 @@ function placerPomme(){
 }
 
 function collisionPomme(){
-	if(grille[position.x][position.y] == "pomme"){
-		grille[position.x][position.y] = false;
+	if(grille[serpent.tete.x][serpent.tete.y] == "pomme"){
+		grille[serpent.tete.x][serpent.tete.y] = false;
 		placerPomme();
-		agrandirSerpent();
+		serpent.agrandir();
 	}
-}
-
-function agrandirSerpent(direction){
-	//TODO
-	serpent.taille++;
-	//positionQueue
 }
 
 function mourir () {
