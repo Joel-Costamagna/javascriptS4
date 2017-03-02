@@ -145,7 +145,13 @@ function placerPomme(){
 	pommeY = Math.floor(Math.random() * (GRILLE_Y));
 	pommeX = Math.floor(Math.random() * (GRILLE_X));
 	grille[pommeX][pommeY]= "pomme";
+	var pomme = new Image();
+	pomme.src = '../images/Pomme.png';
+	pomme.onload = function(){
+  		gamezone.drawImage(pomme, pommeX, pommeY);
+	}
 }
+	
 
 function collisionPomme(){
 	if(grille[jacques.tete.x][jacques.tete.y] == "pomme"){
