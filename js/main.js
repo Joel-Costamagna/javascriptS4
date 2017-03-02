@@ -53,6 +53,7 @@ function bouger(event) {
 		case 81:
 		case 37:
 			//alert("vous allez à gauche");
+
 			if(jacques.tete.x-1 > 0){
 				jacques.tete.x--;
 				jacques.tete.direction="GAUCHE";
@@ -65,8 +66,9 @@ function bouger(event) {
 		case 90:
 		case 38:
 			//alert("vous allez en haut");
-			if (jacques.tete.y+1 < GRILLE_Y-1) {
-				jacques.tete.y++;
+			redraw();
+			if (jacques.tete.y-1 > 0) {
+				jacques.tete.y--;
 			}else {
 				mourir();
 			}
@@ -87,8 +89,8 @@ function bouger(event) {
 		case 83:
 		case 40:
 			//alert("vous allez en bas");
-			if (jacques.tete.y-1 > 0) {
-				jacques.tete.y--;
+			if (jacques.tete.y-1 < GRILLE_Y-1) {
+				jacques.tete.y++;
 			}else {
 				mourir();
 			}
@@ -106,7 +108,10 @@ function Position(x, y, direction){
 
 
 }
-
+/**
+ * @constructor serpent
+ * crée un objet serpent
+ */
 function serpent(){
 	this.tete = new Position(0,0,"DROITE");
 	this.queue = new Position(0,0,"DROITE");
@@ -117,7 +122,7 @@ function serpent(){
 		this.taille++;
 		switch (this.queue.direction) {
 			case "HAUT":
-				this.positions.push(new Position(this.queue.x, this.queue.y-1, "HAUT"));
+				this.positions.push(new Position(this.queue.x, this.queue.y+1, "HAUT"));
 			break;
 
 			case "DROITE":
@@ -125,7 +130,7 @@ function serpent(){
 			break;
 
 			case "BAS":
-				this.positions.push(new Position(this.queue.x, this.queue.y+1, "BAS"));
+				this.positions.push(new Position(this.queue.x, this.queue.y-1, "BAS"));
 			break;
 
 			case "GAUCHE":
@@ -137,7 +142,12 @@ function serpent(){
 
 
 function redraw() {
-
+	gamezone.strokeStyle="#0F0";
+	gamezone.fillStyle="#0F0";
+	for (var truc in jacques.positions) {
+		gamezone.strokeRect(15,15,10, 10);
+		console.log("dessin");
+	}
 }
 
 
@@ -148,8 +158,11 @@ function placerPomme(){
 	var imgPomme = document.getElementById('pom');
 	gamezone.drawImage(imgPomme, pommeX, pommeY);
 	console.log(imgPomme);
+	pomme.onload = function (arg){
+  		gamezone.drawImage(pomme, pommeX, pommeY);
+	}
 }
-	
+
 
 function collisionPomme(){
 	if(grille[jacques.tete.x][jacques.tete.y] == "pomme"){
