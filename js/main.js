@@ -93,6 +93,27 @@ function Position(x, y, direction){
 	this.x = x;
 	this.y = y;
 	this.direction = direction;
+
+	this.agrandir = function (){
+		serpent.taille++;	
+		switch (serpent.queue.direction) {
+			case "HAUT":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y-1, "HAUT"));
+			break;
+
+			case "DROITE":
+				serpent.positions.push(new Position(serpent.queue.x-1, serpent.queue.y, "DROITE"));
+			break;
+
+			case "BAS":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y+1, "BAS"));
+			break;
+
+			case "GAUCHE":
+				serpent.positions.push(new Position(serpent.queue.x+1, serpent.queue.y, "GAUCHE"));
+			break;
+		}
+	}
 }
 
 function Serpent(){
@@ -116,28 +137,7 @@ function collisionPomme(){
 	if(grille[serpent.tete.x][serpent.tete.y] == "pomme"){
 		grille[serpent.tete.x][serpent.tete.y] = false;
 		placerPomme();
-		agrandirSerpent();
-	}
-}
-
-function agrandirSerpent(direction){
-	serpent.taille++;	
-	switch (serpent.queue.direction) {
-		case "HAUT":
-			serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y-1, "HAUT"));
-		break;
-
-		case "DROITE":
-			serpent.positions.push(new Position(serpent.queue.x-1, serpent.queue.y, "DROITE"));
-		break;
-
-		case "BAS":
-			serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y+1, "BAS"));
-		break;
-
-		case "GAUCHE":
-			serpent.positions.push(new Position(serpent.queue.x+1, serpent.queue.y, "GAUCHE"));
-		break;
+		serpent.agrandir();
 	}
 }
 
