@@ -1,6 +1,6 @@
 const GRILLE_Y = 30;
 const GRILLE_X = 60;
-const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
+var grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le serpent
 var cadre;
 var gamezone;
 var serpent;
@@ -26,6 +26,7 @@ function main () {
 				bouger(e);
 	});
 
+	placerPomme();
 	serpent = new Serpent();
 }
 
@@ -137,14 +138,12 @@ function redraw() {
 }
 
 function placerPomme(){
-	pomme.y = math.floor(Math.random() * (GRILLE_Y));
-	pomme.x = math.floor(Math.random() * (GRILLE_X));
-	grille[pommeX][pommeY]= "pomme";
-	var pomme = new Image();
+	pommeY= Math.floor(Math.random() * (GRILLE_Y));
+	pommeX = Math.floor(Math.random() * (GRILLE_X));
+	grille[pommeX][pommeY] = "pomme";
+	/*var pomme = new Image();
 	pomme.src = '../images/Pomme.png';
-	pomme.onload = function(){
-  		gamezone.drawImage(pomme, pommeX, pommeY);
-	}
+  	gamezone.drawImage(pomme, pommeX, pommeY);*/
 }
 	
 
