@@ -4,9 +4,6 @@ const grille = [GRILLE_X][GRILLE_Y]; //la grille dans laquelle se déplace le se
 var cadre;
 var gamezone;
 var serpent;
-var position;
-
-
 
 function main () {
 	cadre = document.getElementById('gamezone');
@@ -33,7 +30,7 @@ function main () {
 				bouger(e);
 	});
 
-	position = {x: 0, y: 0};
+	serpent = new Serpent();
 }
 
 /**
@@ -105,6 +102,40 @@ function bouger(event) {
 	}
 }
 
+function Position(x, y, direction){
+	this.x = x;
+	this.y = y;
+	this.direction = direction;
+
+	this.agrandir = function (){
+		serpent.taille++;
+		switch (serpent.queue.direction) {
+			case "HAUT":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y-1, "HAUT"));
+			break;
+
+			case "DROITE":
+				serpent.positions.push(new Position(serpent.queue.x-1, serpent.queue.y, "DROITE"));
+			break;
+
+			case "BAS":
+				serpent.positions.push(new Position(serpent.queue.x, serpent.queue.y+1, "BAS"));
+			break;
+
+			case "GAUCHE":
+				serpent.positions.push(new Position(serpent.queue.x+1, serpent.queue.y, "GAUCHE"));
+			break;
+		}
+	}
+}
+
+function Serpent(){
+	this.tete = new Position(0,0,"DROITE");
+	this.queue = new Position(0,0,"DROITE");
+	this.taille = 1;
+	this.positions = [];
+	this.positions.push(this.tete);
+}
 
 function redraw() {
 }
@@ -116,17 +147,11 @@ function placerPomme(){
 }
 
 function collisionPomme(){
-	if(grille[position.x][position.y] == "pomme"){
-		grille[position.x][position.y] = false;
+	if(grille[serpent.tete.x][serpent.tete.y] == "pomme"){
+		grille[serpent.tete.x][serpent.tete.y] = false;
 		placerPomme();
-		agrandirSerpent();
+		serpent.agrandir();
 	}
-}
-
-function agrandirSerpent(direction){
-	//TODO
-	serpent.taille++;
-	//positionQueue
 }
 
 function mourir () {
