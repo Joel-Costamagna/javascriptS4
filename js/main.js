@@ -1,10 +1,13 @@
-const GRILLE_Y = 30;
-const GRILLE_X = 60;
+const GRILLE_Y = 30; //taille des colonnes de la grille
+const GRILLE_X = 60; //taille des lignes de la grilee
 var grille = new Array(GRILLE_X).fill(new Array(GRILLE_Y)); //la grille dans laquelle se déplace Jacques
 var cadre;
 var gamezone;
-var jacques;
+var jacques; //le serpent
+var pommeX; //coord x de la pomme
+var pommeY; //coord y de le pomme
 
+//fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
 function main () {
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
@@ -12,6 +15,7 @@ function main () {
 	cadre.style.width = GRILLE_X * 15 + "px";
 	cadre.style.height = GRILLE_Y* 15 + "px";
 	dessinerGrille();
+
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function () {
 		if(document.getElementById('div_rules').style.display == "none"){
@@ -26,8 +30,15 @@ function main () {
 				bouger(e);
 	});
 
-	jacques = new serpent();
-	placerPomme();
+	jacques = new Serpent(); //on init le serpent
+	placerPomme(); // on place la 1ère pomme
+}
+
+//fonction qui réinitialise le jeu LORSQUE LE JOUEUR A PERDU ! =/= de main
+function init(){
+	effacerPomme(); //on efface la pomme
+	placerPomme(); //on en replace une
+	jacques = new Serpent(); //on recreer un serpent
 }
 
 /**
@@ -53,7 +64,6 @@ function bouger(event) {
 		case 81:
 		case 37:
 			//alert("vous allez à gauche");
-
 			if(jacques.tete.x-1 > 0){
 				jacques.tete.x--;
 				jacques.tete.direction="GAUCHE";
@@ -66,6 +76,7 @@ function bouger(event) {
 		case 90:
 		case 38:
 			//alert("vous allez en haut");
+
 			redraw();
 			if (jacques.tete.y-1 > 0) {
 				jacques.tete.y--;
@@ -78,6 +89,7 @@ function bouger(event) {
 		case 68:
 		case 39:
 			//alert("vous allez à droite");
+            
 			if (jacques.tete.x+1 < GRILLE_X-1) {
 				jacques.tete.x++;
 			}else {
@@ -89,6 +101,7 @@ function bouger(event) {
 		case 83:
 		case 40:
 			//alert("vous allez en bas");
+
 			if (jacques.tete.y-1 < GRILLE_Y-1) {
 				jacques.tete.y++;
 			}else {
@@ -97,22 +110,23 @@ function bouger(event) {
 			collisionPomme();
 			break;
 		default:
-			alert("utilisez ZQSD pour se déplacer");
+			//desole mais ct toxic alert("utilisez ZQSD pour se déplacer");
 	}
+	console.log("Serpent x: "+jacques.tete.x + " Serpent y: "+jacques.tete.y);
 }
 
+//constructeur Position qui va constituer le corps de jacques
 function Position(x, y, direction){
 	this.x = x;
 	this.y = y;
-	this.direction = direction;
-
-
+	this.direction = direction; //direction dans lequel se dirige le point (haut, droite, bas, gauche)
 }
+
 /**
  * @constructor serpent
- * crée un objet serpent
+ * créer un objet serpent
  */
-function serpent(){
+function Serpent(){
 	this.tete = new Position(0,0,"DROITE");
 	this.queue = new Position(0,0,"DROITE");
 	this.taille = 1;
@@ -150,21 +164,21 @@ function redraw() {
 	}
 }
 
-
+//fonction pour placer une pomme
 function placerPomme(){
-	pommeY= Math.floor(Math.random() *GRILLE_Y);
-	pommeX = Math.floor(Math.random() *GRILLE_X);
-	console.log(pommeY);
-	console.log(pommeX);
+	pommeY= Math.floor(Math.random() *GRILLE_Y); //x de la pomme choisi aléatoirement
+	pommeX = Math.floor(Math.random() *GRILLE_X); //y de la pomme choisi aléatoirement
+	console.log("Pomme X: " + pommeX + " Pomme Y: " + pommeY);
 	grille[pommeX][pommeY] = "pomme";
-	var imgPomme = document.getElementById('pom');
-	gamezone.drawImage(imgPomme, pommeX*15, pommeY*15);
+	var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
+	gamezone.drawImage(imgPomme, pommeX*15, pommeY*15); //on dessine la pomme sur le canvas
 }
 
 
 function collisionPomme(){
 	if(grille[jacques.tete.x][jacques.tete.y] == "pomme"){
 		grille[jacques.tete.x][jacques.tete.y] = false;
+		effacerPomme();
 		placerPomme();
 		jacques.agrandir();
 	}
@@ -172,5 +186,11 @@ function collisionPomme(){
 
 function mourir () {
 	alert("vous avez perdu");
-	main();
+	effacerPomme();
+	init();
+}
+
+function effacerPomme(){
+	grille[pommeX][pommeY] = undefined;
+	gamezone.clearRect(pommeX*15, pommeY*15, 15, 15);
 }
