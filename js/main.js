@@ -1,6 +1,6 @@
 const GRILLE_Y = 30; //taille des colonnes de la grille
 const GRILLE_X = 60; //taille des lignes de la grilee
-var grille = new Array(GRILLE_X).fill(new Array(GRILLE_Y).fill(false)); //la grille dans laquelle se déplace Jacques
+var grille;
 var cadre;
 var gamezone;
 var jacques; //le serpent
@@ -12,6 +12,10 @@ var divScore;
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
  */
 function main() {
+	grille= new Array(GRILLE_X);
+	for (var i = 0; i < grille.length; i++) {
+		grille[i] = new Array(GRILLE_Y).fill(false);
+	}
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
 
