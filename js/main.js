@@ -1,5 +1,5 @@
-const GRILLE_Y = 30; //taille des colonnes de la grille
-const GRILLE_X = 60; //taille des lignes de la grilee
+const GRILLE_Y = 30; //nombre de lignes
+const GRILLE_X = 60; //nombre de colonnes
 var grille;
 var cadre;
 var gamezone;
@@ -41,13 +41,15 @@ function main() {
  * on démarre le jeu quand l'utilisateur clique sur la grille
  */
 function demarrer(){
+	jacques = new serpent();
+	redraw();
 	document.removeEventListener('keydown',demarrer);
 	document.removeEventListener('click',demarrer);
 	document.addEventListener('keydown', function(e) {
 		bouger(e);
 	});
-	jacques = new serpent();
 	placerPomme();
+	// pour faire bouger le serpent tout seul;
 	setInterval(function(e) {
 		bouger(e);
 	}, jacques.VITESSE);
@@ -67,6 +69,7 @@ function init() {
  * dessine la grille sur le canvas, avec des cases de 15*15
  */
 function dessinerGrille() {
+	effacer();
 	gamezone.strokeStyle = "#000";
 	for (var x = 0; x < GRILLE_X * 15; x += 15) {
 		gamezone.moveTo(x, 0);
@@ -106,16 +109,14 @@ function bouger(event) {
 					mourir();
 				}
 				break;
-			default:
+			case "DROITE":
 				if (jacques.tete.x + 1 < GRILLE_X - 1) {
-
 					jacques.tete.x++;
 				} else {
 					mourir();
 				}
 		}
 	} else {
-
 		switch (event.keyCode) {
 			case 27:
 				alert("PAUSE");
@@ -167,7 +168,7 @@ function serpent() {
 	this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
 	this.SCORE = 0;
-	this.VITESSE = 300; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
+	this.VITESSE = 100; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
 	this.positions = [];
 	this.positions.push(this.tete);
 	this.agrandir = function() {
@@ -175,20 +176,26 @@ function serpent() {
 		switch (this.queue.direction) {
 			case "HAUT":
 				this.positions.push(new Position(this.queue.x, this.queue.y + 1, "HAUT"));
+				console.log("haut++");
 				break;
 
 			case "DROITE":
 				this.positions.push(new Position(this.queue.x - 1, this.queue.y, "DROITE"));
+				console.log("droit++");
 				break;
 
 			case "BAS":
 				this.positions.push(new Position(this.queue.x, this.queue.y - 1, "BAS"));
+				console.log("bas++");
 				break;
 
 			case "GAUCHE":
 				this.positions.push(new Position(this.queue.x + 1, this.queue.y, "GAUCHE"));
+				console.log("gauche++");
 				break;
 		}
+		console.log(this.positions.length);
+		console.log(this.taille);
 	}
 }
 
@@ -200,6 +207,7 @@ function serpent() {
 function redraw() {
 	gamezone.strokeStyle = "black"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
+	dessinerGrille();
 	for (var corps of jacques.positions) {
 		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
 		gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
@@ -213,8 +221,7 @@ function redraw() {
 function placerPomme() {
 	pommeY = Math.floor(Math.random() * GRILLE_Y); //x de la pomme choisi aléatoirement
 	pommeX = Math.floor(Math.random() * GRILLE_X); //y de la pomme choisi aléatoirement
-	console.log("Pomme X: " + pommeX + " Pomme Y: " + pommeY);
-	grille[pommeX][pommeY] = "pomme"; //FIXME: crée "pomme" dans tout pommeX à l'index pommeY
+	grille[pommeX][pommeY] = "pomme";
 	var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
 	gamezone.drawImage(imgPomme, pommeX * 15, pommeY * 15); //on dessine la pomme sur le canvas
 }
@@ -226,15 +233,13 @@ function placerPomme() {
 function collisionPomme() {
 	//console.log("la case " + jacques.tete.x + "," + jacques.tete.y + " contient " + grille[jacques.tete.x][jacques.tete.y]);
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
-		console.log("x = " + jacques.tete.x);
-		console.log("y = " + jacques.tete.y);
 		grille[jacques.tete.x][jacques.tete.y] = false;
 		jacques.SCORE += 10;
-		jacques.VITESSE-=10;
+		jacques.VITESSE -= 10; //on accèlere;
 		effacerPomme();
 		placerPomme();
 		jacques.agrandir();
-		divScore.innerHTML = "Votre score est de : " + jacques.score;
+		divScore.innerHTML = "Votre score est de : " + jacques.SCORE;
 	}
 }
 
@@ -247,4 +252,14 @@ function mourir() {
 function effacerPomme() {
 	grille[pommeX][pommeY] = false;
 	gamezone.clearRect(pommeX * 15, pommeY * 15, 15, 15);
+}
+
+function effacer(){
+	gamezone.beginPath();
+	gamezone.clearRect(0, 0, GRILLE_X * 15, GRILLE_Y * 15);
+	if (pommeX !== undefined && pommeY != undefined) { //si il y a une pomme, on la redessine
+		var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
+		gamezone.drawImage(imgPomme, pommeX * 15, pommeY * 15); //on dessine la pomme sur le canvas
+	}
+
 }
