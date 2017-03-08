@@ -164,7 +164,7 @@ function serpent() {
 function redraw() {
 	gamezone.strokeStyle = "#0F0"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
-	for (var corps in jacques.positions) {
+	for (var corps of jacques.positions) {
 		console.log(corps.x);
 		console.log(corps.y);
 		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
