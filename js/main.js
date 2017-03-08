@@ -112,9 +112,10 @@ function bouger(event) {
 			} else {
 				mourir();
 			}
-			collisionPomme();
+
+
 	}
-	//console.log("serpent x: " + jacques.tete.x + " serpent y: " + jacques.tete.y);
+	collisionPomme();
 	redraw();
 }
 
@@ -196,8 +197,8 @@ function placerPomme() {
  * @return {void }
  */
 function collisionPomme() {
+	console.log("la case "+ jacques.tete.x +","+jacques.tete.y + " contient " + grille[jacques.tete.x][jacques.tete.y]);
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
-		console.log("la case contient " + grille[jacques.tete.x][jacques.tete.y]);
 		console.log("x = " + jacques.tete.x);
 		console.log("y = " + jacques.tete.y);
 		grille[jacques.tete.x][jacques.tete.y] = false;
