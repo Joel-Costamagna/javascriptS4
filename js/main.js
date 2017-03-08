@@ -8,25 +8,23 @@ var pommeX; //coord x de la pomme
 var pommeY; //coord y de le pomme
 var divScore;
 
+
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
  */
 function main() {
-	grille= new Array(GRILLE_X);
+	grille = new Array(GRILLE_X);
 	for (var i = 0; i < grille.length; i++) {
 		grille[i] = new Array(GRILLE_Y).fill(false);
 	}
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
-
 	divScore = document.getElementById('score');
-
 	//la gamezone fait la taille de la grille;
 	cadre.style.width = GRILLE_X * 15 + "px";
 	cadre.style.height = GRILLE_Y * 15 + "px";
 
 	dessinerGrille();
-
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function() {
 		if (document.getElementById('div_rules').style.display == "none") {
@@ -35,11 +33,24 @@ function main() {
 			document.getElementById('div_rules').style.display = "none";
 		}
 	});
+	document.addEventListener('keydown', demarrer);
+	document.addEventListener('click', demarrer);
+
+}
+/**
+ * on démarre le jeu quand l'utilisateur clique sur la grille
+ */
+function demarrer(){
+	document.removeEventListener('keydown',demarrer);
+	document.removeEventListener('click',demarrer);
 	document.addEventListener('keydown', function(e) {
 		bouger(e);
 	});
 	jacques = new serpent();
 	placerPomme();
+	setInterval(function(e) {
+		bouger(e);
+	}, jacques.VITESSE);
 }
 
 /**
@@ -71,49 +82,64 @@ function dessinerGrille() {
 
 
 function bouger(event) {
-	switch (event.keyCode) {
-		case 81:
-		case 37:
-			//alert("vous allez à gauche");
-			if (jacques.tete.x - 1 > 0) {
-				jacques.tete.x--;
+	if (event == undefined) {
+		switch (jacques.tete.direction) {
+			case "HAUT":
+				if (jacques.tete.y - 1 > 0) {
+					jacques.tete.y--;
+				} else {
+					mourir();
+				}
+				break;
+			case "BAS":
+				if (jacques.tete.y - 1 < GRILLE_Y - 1) {
+					jacques.tete.y++;
+				} else {
+					mourir();
+				}
+				break;
+			case "GAUCHE":
+				if (jacques.tete.x - 1 > 0) {
+					jacques.tete.x--;
+					jacques.tete.direction = "GAUCHE";
+				} else {
+					mourir();
+				}
+				break;
+			default:
+				if (jacques.tete.x + 1 < GRILLE_X - 1) {
+
+					jacques.tete.x++;
+				} else {
+					mourir();
+				}
+		}
+	} else {
+
+		switch (event.keyCode) {
+			case 27:
+				alert("PAUSE");
+				break;
+
+			case 81:
+			case 37:
 				jacques.tete.direction = "GAUCHE";
-			} else {
-				mourir();
-			}
-			break;
+				break;
 
-		case 90:
-		case 38:
-			//alert("vous allez en haut");
-			if (jacques.tete.y - 1 > 0) {
-				jacques.tete.y--;
-			} else {
-				mourir();
-			}
-			break;
+			case 90:
+			case 38:
+				jacques.tete.direction = "HAUT";
+				break;
 
-		case 68:
-		case 39:
-			//alert("vous allez à droite");
-			if (jacques.tete.x + 1 < GRILLE_X - 1) {
+			case 68:
+			case 39:
+				jacques.tete.direction = "DROITE";
+				break;
 
-				jacques.tete.x++;
-			} else {
-				mourir();
-			}
-			break;
-
-		case 83:
-		case 40:
-			//alert("vous allez en bas");
-			if (jacques.tete.y - 1 < GRILLE_Y - 1) {
-				jacques.tete.y++;
-			} else {
-				mourir();
-			}
-
-
+			case 83:
+			case 40:
+				jacques.tete.direction = "BAS";
+		}
 	}
 	collisionPomme();
 	redraw();
@@ -140,7 +166,8 @@ function serpent() {
 	this.tete = new Position(0, 0, "DROITE");
 	this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
-	this.score = 0;
+	this.SCORE = 0;
+	this.VITESSE = 300; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
 	this.positions = [];
 	this.positions.push(this.tete);
 	this.agrandir = function() {
@@ -197,16 +224,17 @@ function placerPomme() {
  * @return {void }
  */
 function collisionPomme() {
-	console.log("la case "+ jacques.tete.x +","+jacques.tete.y + " contient " + grille[jacques.tete.x][jacques.tete.y]);
+	//console.log("la case " + jacques.tete.x + "," + jacques.tete.y + " contient " + grille[jacques.tete.x][jacques.tete.y]);
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
 		console.log("x = " + jacques.tete.x);
 		console.log("y = " + jacques.tete.y);
 		grille[jacques.tete.x][jacques.tete.y] = false;
-		jacques.score += 10;
+		jacques.SCORE += 10;
+		jacques.VITESSE-=10;
 		effacerPomme();
 		placerPomme();
 		jacques.agrandir();
-		divScore.innerHTML= "Votre score est de : " + jacques.score;
+		divScore.innerHTML = "Votre score est de : " + jacques.score;
 	}
 }
 
