@@ -41,7 +41,7 @@ function main() {
 function init() {
 	effacerPomme(); //on efface la pomme
 	placerPomme(); //on en replace une
-	jacques = new Serpent(); //on recreer un serpent
+	jacques = new serpent(); //on recreer un serpent
 }
 
 /**
@@ -106,7 +106,7 @@ function bouger(event) {
 			}
 			collisionPomme();
 	}
-	//console.log("Serpent x: " + jacques.tete.x + " Serpent y: " + jacques.tete.y);
+	//console.log("serpent x: " + jacques.tete.x + " serpent y: " + jacques.tete.y);
 	redraw();
 }
 
@@ -164,7 +164,7 @@ function serpent() {
 function redraw() {
 	gamezone.strokeStyle = "#0F0"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
-	for (var corps in jacques.positions) {
+	for (var corps of jacques.positions) {
 		console.log(corps.x);
 		console.log(corps.y);
 		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
