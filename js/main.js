@@ -6,6 +6,7 @@ var gamezone;
 var jacques; //le serpent
 var pommeX; //coord x de la pomme
 var pommeY; //coord y de le pomme
+var divScore
 
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
@@ -13,6 +14,9 @@ var pommeY; //coord y de le pomme
 function main() {
 	cadre = document.getElementById('gamezone');
 	gamezone = cadre.getContext("2d");
+
+	divScore = document.getElementById('score');
+
 	//la gamezone fait la taille de la grille;
 	cadre.style.width = GRILLE_X * 15 + "px";
 	cadre.style.height = GRILLE_Y * 15 + "px";
@@ -162,12 +166,13 @@ function serpent() {
  * @return {void}
  */
 function redraw() {
-	gamezone.strokeStyle = "#0F0"; // couleur de la bordure;
+	gamezone.strokeStyle = "black"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
 	for (var corps of jacques.positions) {
 		console.log(corps.x);
 		console.log(corps.y);
 		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
+		gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
 	}
 }
 
@@ -198,6 +203,7 @@ function collisionPomme() {
 		effacerPomme();
 		placerPomme();
 		jacques.agrandir();
+		divScore.innerHTML= "Votre score est de : " + jacques.score;
 	}
 }
 
