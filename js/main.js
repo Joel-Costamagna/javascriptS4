@@ -6,7 +6,7 @@ var gamezone;
 var jacques; //le serpent
 var pommeX; //coord x de la pomme
 var pommeY; //coord y de le pomme
-var divScore
+var divScore;
 
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
@@ -169,8 +169,6 @@ function redraw() {
 	gamezone.strokeStyle = "black"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
 	for (var corps of jacques.positions) {
-		console.log(corps.x);
-		console.log(corps.y);
 		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
 		gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
 	}
@@ -184,7 +182,7 @@ function placerPomme() {
 	pommeY = Math.floor(Math.random() * GRILLE_Y); //x de la pomme choisi aléatoirement
 	pommeX = Math.floor(Math.random() * GRILLE_X); //y de la pomme choisi aléatoirement
 	console.log("Pomme X: " + pommeX + " Pomme Y: " + pommeY);
-	grille[pommeX][pommeY] = "pomme";
+	grille[pommeX][pommeY] = "pomme"; //FIXME: crée "pomme" dans tout pommeX à l'index pommeY
 	var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
 	gamezone.drawImage(imgPomme, pommeX * 15, pommeY * 15); //on dessine la pomme sur le canvas
 }
