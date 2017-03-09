@@ -1,24 +1,40 @@
 <!DOCTYPE html>
-<html lang="fr" >
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="css/master.css">
-		<script src="js/main.js" charset="utf-8"></script>
-		<title>Jeu de Snake</title>
-	</head>
-	<body onload="main();">
-		<canvas id="gamezone" width="900px" height="450px"></canvas>
-		<button  id="rules" type="button" name="rules">Règles du jeu</button>
-		<img id="pom" alt="pom" width="15" height="15" src="images/Pomme.png" hidden="true">
-		<img id="teteHAUT" alt="teteHAUT" width="15" height="15" src="images/teteHAUT.png" hidden="true">
-		<img id="teteDROITE" alt="teteDROITE" width="15" height="15" src="images/teteDROITE.png" hidden="true">
-		<img id="teteGAUCHE" alt="teteGAUCHE" width="15" height="15" src="images/teteGAUCHE.png" hidden="true">
-		<img id="teteBAS" alt="teteBAS" width="15" height="15" src="images/teteBAS.png" hidden="true">
-		<img id="corps" alt="corps" width="15" height="15" src="images/corps.png" hidden="true">
-		<div id="score"></div>
-		<div id="div_rules">
-			<b>voilà les régles:</b>
-			<p>il faut bouger le serpent</p>
-		</div>
-	</body>
+<html lang="fr">
+
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/master.css">
+	<script src="js/main.js" charset="utf-8"></script>
+	<title>Jeu de Snake</title>
+</head>
+
+<body onload="main();">
+	<canvas id="gamezone" width="900px" height="470px"></canvas>
+	<button id="rules" type="button" name="rules">Règles du jeu</button>
+	<div id="div_rules">
+		<H2>voilà les régles:</H2>
+		<p>Utilisez ZQSD ou les touches fléchées pour déplacer le serpent</p>
+		<p>Le but est de manger des pommes afin de faire grandir le serpent, et d'avoir le plus haut score</p>
+		<p>chaque pomme mangée augmente le score de 10, et fait accelerer le serpent</p>
+		<p>Vous ne pouvez pas sortir de la zone, et vous ne devez pas vous manger vous-même</p>
+		<p>sinon vous <b>MOURREZ</b></p>
+		<p>appuyez sur Echap pour mettre en pause le jeu.</p>
+	</div>
+	<select id="Theme" name="Theme">
+		<option value="default" selected>choisissez un theme</option>
+		<option value="GREEN">Vert</option>
+		<option value="BLUE">Bleu</option>
+		<option value="SOLARIZED">Solarized</option>
+		<option value="RED">Rouge</option>
+	</select>
+	<img id="pom" alt="pom" src="images/Pomme.png" hidden>
+	<img id="teteHAUT" alt="teteHAUT" src="images/teteHAUT.png" hidden>
+	<img id="teteDROITE" alt="teteDROITE" src="images/teteDROITE.png" hidden>
+	<img id="teteGAUCHE" alt="teteGAUCHE" src="images/teteGAUCHE.png" hidden>
+	<img id="teteBAS" alt="teteBAS" src="images/teteBAS.png" hidden>
+	<img id="corps" alt="corps" src="images/corps.png" hidden>
+	<div id="score"></div>
+
+</body>
+
 </html>

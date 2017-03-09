@@ -1,5 +1,7 @@
-const GRILLE_Y = 30; //nombre de lignes
+const GRILLE_Y = 31; //nombre de lignes
 const GRILLE_X = 60; //nombre de colonnes
+const TAILLE_CASE = 15;
+
 var grille;
 var cadre;
 var gamezone;
@@ -11,43 +13,46 @@ var divScore;
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
  */
- function main() {
- 	grille = new Array(GRILLE_X);
- 	for (var i = 0; i < grille.length; i++) {
- 		grille[i] = new Array(GRILLE_Y).fill(false);
- 	}
- 	cadre = document.getElementById('gamezone');
- 	gamezone = cadre.getContext("2d");
- 	divScore = document.getElementById('score');
+function main() {
+	grille = new Array(GRILLE_X);
+	for (var i = 0; i < grille.length; i++) {
+		grille[i] = new Array(GRILLE_Y).fill(false);
+	}
+	cadre = document.getElementById('gamezone');
+	gamezone = cadre.getContext("2d");
+	divScore = document.getElementById('score');
+	var divRules = document.getElementById('div_rules');
+	divRules.style.display = "none";
 	//la gamezone fait la taille de la grille;
-	cadre.style.width = GRILLE_X * 15 + "px";
-	cadre.style.height = GRILLE_Y * 15 + "px";
+	//cadre.style.width = GRILLE_X * TAILLE_CASE + "px";
+	//cadre.style.height = GRILLE_Y * TAILLE_CASE + "px";
 
 	dessinerGrille();
 	//le bouton régles affiche les regles ou les cache.
 	document.getElementById('rules').addEventListener('click', function () {
-		if (document.getElementById('div_rules').style.display == "none") {
-			document.getElementById('div_rules').style.display = "block";
+		if (divRules.style.display == "none") {
+			divRules.style.display = "block";
 		} else {
-			document.getElementById('div_rules').style.display = "none";
+			divRules.style.display = "none";
 		}
 	});
-	document.addEventListener('keydown', demarrer);
-	document.addEventListener('click', demarrer);
+	cadre.addEventListener('keydown', demarrer);
+	cadre.addEventListener('click', demarrer);
 
 }
 /**
  * on démarre le jeu quand l'utilisateur clique sur la grille
  */
- function demarrer() {
- 	jacques = new serpent();
- 	redraw();
- 	document.removeEventListener('keydown', demarrer);
- 	document.removeEventListener('click', demarrer);
- 	document.addEventListener('keydown', function (e) {
- 		bouger(e);
- 	});
- 	placerPomme();
+
+function demarrer() {
+	jacques = new serpent();
+	redraw();
+	cadre.removeEventListener('keydown', demarrer);
+	cadre.removeEventListener('click', demarrer);
+	document.addEventListener('keydown', function (e) {
+		bouger(e);
+	});
+	placerPomme();
 	// pour faire bouger le serpent tout seul;
 	setInterval(function (e) {
 		bouger(e);
@@ -65,8 +70,9 @@ var divScore;
 }
 
 /**
- * dessine la grille sur le canvas, avec des cases de 15*15
+ * dessine la grille sur le canvas, avec des cases de TAILLE_CASE*TAILLE_CASE
  */
+<<<<<<< HEAD
  function dessinerGrille() {
  	effacer();
  	gamezone.strokeStyle = "#000";
@@ -97,6 +103,7 @@ var divScore;
 					} else {
 						mourir();
 					}
+
 					break;
 					case "BAS":
 					if (jacques.tete.y - 1 < GRILLE_Y - 1) {
@@ -182,7 +189,7 @@ var divScore;
 	//this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
 	this.SCORE = 0;
-	this.VITESSE = 100; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
+	this.VITESSE = 350; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
 	this.positions = [];
 
 	this.positions.push(this.tete);
@@ -214,8 +221,6 @@ var divScore;
 			console.log("gauche++");
 			break;
 		}
-		console.log(this.positions.length);
-		console.log(this.taille);
 	}
 }
 
@@ -234,10 +239,9 @@ var divScore;
 		if (corps.isTete) {
 			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * 15, corps.y * 15);
 		} else {
-			//gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
-			//gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
-			gamezone.drawImage(imgCorps, corps.x * 15, corps.y * 15);
-			console.log('x: ' + corps.x + ' y: ' + corps.y);
+			//gamezone.strokeRect(corps.x * TAILLE_CASE, corps.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+			//gamezone.fillRect(corps.x * TAILLE_CASE, corps.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+			gamezone.drawImage(imgCorps, corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		}
 	}
 }
@@ -251,19 +255,21 @@ var divScore;
 	pommeX = Math.floor(Math.random() * GRILLE_X); //y de la pomme choisi aléatoirement
 	grille[pommeX][pommeY] = "pomme";
 	var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
-	gamezone.drawImage(imgPomme, pommeX * 15, pommeY * 15); //on dessine la pomme sur le canvas
+	gamezone.drawImage(imgPomme, pommeX * TAILLE_CASE, pommeY * TAILLE_CASE); //on dessine la pomme sur le canvas
 }
 
 /**
  * teste si le serpent est sur une case pomme.
  * @return {void }
  */
- function collisionPomme() {
-	//console.log("la case " + jacques.tete.x + "," + jacques.tete.y + " contient " + grille[jacques.tete.x][jacques.tete.y]);
+function collisionPomme() {
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
 		grille[jacques.tete.x][jacques.tete.y] = false;
 		jacques.SCORE += 10;
-		jacques.VITESSE -= 10; //on accèlere;
+		if (jacques.VITESSE > 20) {
+			jacques.VITESSE -= 20; //on accèlere;
+		} //si on est à 20, c'est déjà très rapide !!!
+
 		effacerPomme();
 		placerPomme();
 		jacques.agrandir();
@@ -279,15 +285,20 @@ function mourir() {
 
 function effacerPomme() {
 	grille[pommeX][pommeY] = false;
-	gamezone.clearRect(pommeX * 15, pommeY * 15, 15, 15);
+	gamezone.clearRect(pommeX * TAILLE_CASE, pommeY * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
 }
 
 function effacer() {
 	gamezone.beginPath();
-	gamezone.clearRect(0, 0, GRILLE_X * 15, GRILLE_Y * 15);
+	gamezone.clearRect(0, 0, GRILLE_X * TAILLE_CASE, GRILLE_Y * TAILLE_CASE);
 	if (pommeX !== undefined && pommeY != undefined) { //si il y a une pomme, on la redessine
 		var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
-		gamezone.drawImage(imgPomme, pommeX * 15, pommeY * 15); //on dessine la pomme sur le canvas
+		gamezone.drawImage(imgPomme, pommeX * TAILLE_CASE, pommeY * TAILLE_CASE); //on dessine la pomme sur le canvas
 	}
+
+}
+
+
+function changerTheme(event) {
 
 }
