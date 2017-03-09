@@ -63,7 +63,7 @@ function demarrer() {
  * fonction qui réinitialise le jeu LORSQUE LE JOUEUR A PERDU ! =/= de main
  *
  */
- function init() {
+function init() {
 	effacerPomme(); //on efface la pomme
 	placerPomme(); //on en replace une
 	jacques = new serpent(); //on recreer un serpent
@@ -72,31 +72,31 @@ function demarrer() {
 /**
  * dessine la grille sur le canvas, avec des cases de TAILLE_CASE*TAILLE_CASE
  */
- function dessinerGrille() {
- 	effacer();
- 	gamezone.strokeStyle = "#000";
- 	for (var x = 0; x < GRILLE_X * 15; x += 15) {
- 		gamezone.moveTo(x, 0);
- 		gamezone.lineTo(x, GRILLE_Y * 15);
- 	}
+function dessinerGrille() {
+	effacer();
+	gamezone.strokeStyle = "#000";
+	for (var x = 0; x < GRILLE_X * 15; x += 15) {
+		gamezone.moveTo(x, 0);
+		gamezone.lineTo(x, GRILLE_Y * 15);
+	}
 
- 	for (var y = 0; y < GRILLE_Y * 15; y += 15) {
- 		gamezone.moveTo(0, y);
- 		gamezone.lineTo(GRILLE_X * 15, y);
- 	}
- 	gamezone.stroke();
- }
+	for (var y = 0; y < GRILLE_Y * 15; y += 15) {
+		gamezone.moveTo(0, y);
+		gamezone.lineTo(GRILLE_X * 15, y);
+	}
+	gamezone.stroke();
+}
 
 
- function bouger(event) {
- 	var ancienneDirection = jacques.tete.direction;
- 	var dir;
- 	if (event == undefined) {
- 		for (var corps of jacques.positions) {
- 			dir = ancienneDirection;
- 			switch(corps.direction){
- 				case "HAUT":
- 				if (jacques.tete.y - 1 > 0) {
+function bouger(event) {
+	var ancienneDirection = jacques.tete.direction;
+	var dir;
+	if (event == undefined) {
+		for (var corps of jacques.positions) {
+			dir = ancienneDirection;
+			switch (corps.direction) {
+				case "HAUT":
+					if (jacques.tete.y - 1 > 0) {
 						//jacques.tete.y--;
 						corps.y--;
 					} else {
@@ -104,25 +104,25 @@ function demarrer() {
 					}
 
 					break;
-					case "BAS":
+				case "BAS":
 					if (jacques.tete.y - 1 < GRILLE_Y - 1) {
 						//jacques.tete.y++;
 						corps.y++;
-						
+
 					} else {
 						mourir();
 					}
 					break;
-					case "GAUCHE":
+				case "GAUCHE":
 					if (jacques.tete.x - 1 > 0) {
 						//jacques.tete.x--;
 						corps.x--;
-						
+
 					} else {
 						mourir();
 					}
 					break;
-					case "DROITE":
+				case "DROITE":
 					if (jacques.tete.x + 1 < GRILLE_X - 1) {
 						//jacques.tete.x++;
 						corps.x++;
@@ -130,40 +130,44 @@ function demarrer() {
 						mourir();
 					}
 					break;
-				}
-				ancienneDirection = corps.direction;
-				corps.direction = dir;
 			}
-		} else {
-			switch (event.keyCode) {
-				case 27:
+			ancienneDirection = corps.direction;
+			corps.direction = dir;
+			if (grille[corps.x][corps.y] != "pomme" && corps.isTete == false) {
+				grille[corps.x][corps.y] = "serpent";
+			}
+		}
+	} else {
+		switch (event.keyCode) {
+			case 27:
 				alert("PAUSE");
 				break;
 
-				case 81:
-				case 37:
+			case 81:
+			case 37:
 				jacques.tete.direction = "GAUCHE";
 				break;
 
-				case 90:
-				case 38:
+			case 90:
+			case 38:
 				jacques.tete.direction = "HAUT";
 				break;
 
-				case 68:
-				case 39:
+			case 68:
+			case 39:
 				jacques.tete.direction = "DROITE";
 				break;
 
-				case 83:
-				case 40:
+			case 83:
+			case 40:
 				jacques.tete.direction = "BAS";
-			}
 		}
-		collisionPomme();
-		redraw();
-
 	}
+	collisionPomme();
+	collisionCorps();
+	redraw();
+
+}
 
 /**
  * chaque partie du corps (segmetn du serpent ) est une positon
@@ -172,10 +176,10 @@ function demarrer() {
  * @param {String} direction la direction du serpentr
  * @constructor
  */
- function Position(x, y, direction, isTete) {
- 	this.isTete = isTete;
- 	this.x = x;
- 	this.y = y;
+function Position(x, y, direction, isTete) {
+	this.isTete = isTete;
+	this.x = x;
+	this.y = y;
 	this.direction = direction; //direction dans lequel se dirige le point (haut, droite, bas, gauche)
 }
 
@@ -183,8 +187,8 @@ function demarrer() {
  * @constructor serpent
  * créer un objet serpent
  */
- function serpent() {
- 	this.tete = new Position(0, 0, "DROITE", true);
+function serpent() {
+	this.tete = new Position(0, 0, "DROITE", true);
 	//this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
 	this.SCORE = 0;
@@ -198,27 +202,22 @@ function demarrer() {
 	this.agrandir = function () {
 		var queue = this.positions[this.taille - 1]; //le tableau positions commence à 0 et la taille est à 1
 		this.taille++;
-		console.log(this.positions[0]);
 		switch (queue.direction) {
 			case "HAUT":
-			this.positions.push(new Position(queue.x, queue.y + 1, "HAUT", false));
-			console.log("haut++");
-			break;
+				this.positions.push(new Position(queue.x, queue.y + 1, "HAUT", false));
+				break;
 
 			case "DROITE":
-			this.positions.push(new Position(queue.x - 1, queue.y, "DROITE", false));
-			console.log("droit++");
-			break;
+				this.positions.push(new Position(queue.x - 1, queue.y, "DROITE", false));
+				break;
 
 			case "BAS":
-			this.positions.push(new Position(queue.x, queue.y - 1, "BAS", false));
-			console.log("bas++");
-			break;
+				this.positions.push(new Position(queue.x, queue.y - 1, "BAS", false));
+				break;
 
 			case "GAUCHE":
-			this.positions.push(new Position(queue.x + 1, queue.y, "GAUCHE", false));
-			console.log("gauche++");
-			break;
+				this.positions.push(new Position(queue.x + 1, queue.y, "GAUCHE", false));
+				break;
 		}
 	}
 }
@@ -228,8 +227,8 @@ function demarrer() {
  * cette fonction est appelée à chaque mouvement du serpent.
  * @return {void}
  */
- function redraw() {
- 	var imgCorps = document.getElementById('corps');
+function redraw() {
+	var imgCorps = document.getElementById('corps');
 	gamezone.strokeStyle = "black"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
 
@@ -249,7 +248,7 @@ function demarrer() {
  * place une pomme sur le plateau
  * @return {void}
  */
- function placerPomme() {
+function placerPomme() {
 	pommeY = Math.floor(Math.random() * GRILLE_Y); //x de la pomme choisi aléatoirement
 	pommeX = Math.floor(Math.random() * GRILLE_X); //y de la pomme choisi aléatoirement
 	grille[pommeX][pommeY] = "pomme";
@@ -276,9 +275,15 @@ function collisionPomme() {
 	}
 }
 
+function collisionCorps() {
+	if (grille[jacques.tete.x][jacques.tete.y] == "serpent") {
+		mourir();
+	}
+}
+
+
 function mourir() {
 	alert("vous avez perdu");
-	effacerPomme();
 	init();
 }
 
@@ -290,11 +295,15 @@ function effacerPomme() {
 function effacer() {
 	gamezone.beginPath();
 	gamezone.clearRect(0, 0, GRILLE_X * TAILLE_CASE, GRILLE_Y * TAILLE_CASE);
+	for (var i = 0; i < grille.length; i++) {
+		grille[i] = new Array(GRILLE_Y).fill(false);
+	}
+
 	if (pommeX !== undefined && pommeY != undefined) { //si il y a une pomme, on la redessine
+		grille[pommeX][pommeY] = "pomme";
 		var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
 		gamezone.drawImage(imgPomme, pommeX * TAILLE_CASE, pommeY * TAILLE_CASE); //on dessine la pomme sur le canvas
 	}
-
 }
 
 
