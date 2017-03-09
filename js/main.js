@@ -26,7 +26,7 @@ function main() {
 
 	dessinerGrille();
 	//le bouton régles affiche les regles ou les cache.
-	document.getElementById('rules').addEventListener('click', function() {
+	document.getElementById('rules').addEventListener('click', function () {
 		if (document.getElementById('div_rules').style.display == "none") {
 			document.getElementById('div_rules').style.display = "block";
 		} else {
@@ -40,17 +40,17 @@ function main() {
 /**
  * on démarre le jeu quand l'utilisateur clique sur la grille
  */
-function demarrer(){
+function demarrer() {
 	jacques = new serpent();
 	redraw();
-	document.removeEventListener('keydown',demarrer);
-	document.removeEventListener('click',demarrer);
-	document.addEventListener('keydown', function(e) {
+	document.removeEventListener('keydown', demarrer);
+	document.removeEventListener('click', demarrer);
+	document.addEventListener('keydown', function (e) {
 		bouger(e);
 	});
 	placerPomme();
 	// pour faire bouger le serpent tout seul;
-	setInterval(function(e) {
+	setInterval(function (e) {
 		bouger(e);
 	}, jacques.VITESSE);
 }
@@ -89,29 +89,41 @@ function bouger(event) {
 		switch (jacques.tete.direction) {
 			case "HAUT":
 				if (jacques.tete.y - 1 > 0) {
-					jacques.tete.y--;
+					//jacques.tete.y--;
+					for (var corps of jacques.positions) {
+						corps.y--;
+					}
 				} else {
 					mourir();
 				}
 				break;
 			case "BAS":
 				if (jacques.tete.y - 1 < GRILLE_Y - 1) {
-					jacques.tete.y++;
+					//jacques.tete.y++;
+					for (var corps of jacques.positions) {
+						corps.y++;
+					}
 				} else {
 					mourir();
 				}
 				break;
 			case "GAUCHE":
 				if (jacques.tete.x - 1 > 0) {
-					jacques.tete.x--;
+					//jacques.tete.x--;
 					jacques.tete.direction = "GAUCHE";
+					for (var corps of jacques.positions) {
+						corps.x--;
+					}
 				} else {
 					mourir();
 				}
 				break;
 			case "DROITE":
 				if (jacques.tete.x + 1 < GRILLE_X - 1) {
-					jacques.tete.x++;
+					//jacques.tete.x++;
+					for (var corps of jacques.positions) {
+						corps.x++;
+					}
 				} else {
 					mourir();
 				}
@@ -165,32 +177,38 @@ function Position(x, y, direction) {
  */
 function serpent() {
 	this.tete = new Position(0, 0, "DROITE");
-	this.queue = new Position(0, 0, "DROITE");
+	//this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
 	this.SCORE = 0;
 	this.VITESSE = 100; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
 	this.positions = [];
+
 	this.positions.push(this.tete);
-	this.agrandir = function() {
+
+	//this.queue = this.positions[this.taille-1];
+
+	this.agrandir = function () {
+		var queue = this.positions[this.taille - 1]; //le tableau positions commence à 0 et la taille est à 1
 		this.taille++;
-		switch (this.queue.direction) {
+		console.log(this.positions[0]);
+		switch (queue.direction) {
 			case "HAUT":
-				this.positions.push(new Position(this.queue.x, this.queue.y + 1, "HAUT"));
+				this.positions.push(new Position(queue.x, queue.y + 1, "HAUT"));
 				console.log("haut++");
 				break;
 
 			case "DROITE":
-				this.positions.push(new Position(this.queue.x - 1, this.queue.y, "DROITE"));
+				this.positions.push(new Position(queue.x - 1, queue.y, "DROITE"));
 				console.log("droit++");
 				break;
 
 			case "BAS":
-				this.positions.push(new Position(this.queue.x, this.queue.y - 1, "BAS"));
+				this.positions.push(new Position(queue.x, queue.y - 1, "BAS"));
 				console.log("bas++");
 				break;
 
 			case "GAUCHE":
-				this.positions.push(new Position(this.queue.x + 1, this.queue.y, "GAUCHE"));
+				this.positions.push(new Position(queue.x + 1, queue.y, "GAUCHE"));
 				console.log("gauche++");
 				break;
 		}
@@ -205,12 +223,22 @@ function serpent() {
  * @return {void}
  */
 function redraw() {
+	var imgCorps = document.getElementById('corps');
 	gamezone.strokeStyle = "black"; // couleur de la bordure;
 	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
+
 	dessinerGrille();
+	var ind = 0;
 	for (var corps of jacques.positions) {
-		gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
-		gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
+		if (ind == 0) {
+			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * 15, corps.y * 15);
+			ind++;
+		} else {
+			//gamezone.strokeRect(corps.x * 15, corps.y * 15, 15, 15);
+			//gamezone.fillRect(corps.x * 15, corps.y * 15, 15, 15);
+			gamezone.drawImage(imgCorps, corps.x * 15, corps.y * 15);
+			console.log('x: ' + corps.x + ' y: ' + corps.y);
+		}
 	}
 }
 
@@ -254,7 +282,7 @@ function effacerPomme() {
 	gamezone.clearRect(pommeX * 15, pommeY * 15, 15, 15);
 }
 
-function effacer(){
+function effacer() {
 	gamezone.beginPath();
 	gamezone.clearRect(0, 0, GRILLE_X * 15, GRILLE_Y * 15);
 	if (pommeX !== undefined && pommeY != undefined) { //si il y a une pomme, on la redessine
