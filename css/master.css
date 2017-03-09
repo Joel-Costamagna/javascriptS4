@@ -1,19 +1,33 @@
-body{
+body {
 	display: flex;
 	flex-direction: column;
 }
 
-canvas{
+canvas {
+	margin: auto;
 	background: RGBA(34, 45, 52, 1.00);
-	margin: auto;
 }
 
-button{
-	width:10em;
+button {
+	width: 10em;
 	margin: 2em auto;
+	margin-bottom: .1em;
 }
 
-#div_rules{
-	display: none;
+select{
+	width: 15em;
+	margin: 2em auto;
+	margin-bottom: .1em;
+}
+
+#div_rules {
 	margin: auto;
+}
+
+#div_rules>p {
+	margin: .3em;
+}
+h2{
+	text-align: center;
+	margin: .4em;
 }
