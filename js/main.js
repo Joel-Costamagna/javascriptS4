@@ -72,7 +72,6 @@ function demarrer() {
 /**
  * dessine la grille sur le canvas, avec des cases de TAILLE_CASE*TAILLE_CASE
  */
-<<<<<<< HEAD
  function dessinerGrille() {
  	effacer();
  	gamezone.strokeStyle = "#000";
