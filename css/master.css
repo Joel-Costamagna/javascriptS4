@@ -1,11 +1,16 @@
 body {
 	display: flex;
 	flex-direction: column;
+	background: RGBA(38, 50, 56, 1.00);
+	color: lightgrey;
+	font-family:sans-serif;
 }
 
 canvas {
 	margin: auto;
-	background: RGBA(34, 45, 52, 1.00);
+	background: RGBA(34, 45, 52, .60);
+	box-shadow: 0 0 40px green;
+
 }
 
 button {
@@ -20,9 +25,12 @@ select{
 	margin-bottom: .1em;
 }
 
-#div_rules {
-	margin: auto;
+#div_rules, #div_style, #temps, #score {
+	width: 60vw;
+	text-align: center;
+	margin: .2em auto;
 }
+
 
 #div_rules>p {
 	margin: .3em;

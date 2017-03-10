@@ -9,6 +9,8 @@ var jacques; //le serpent
 var pommeX; //coord x de la pomme
 var pommeY; //coord y de le pomme
 var divScore;
+var GAMELOOP;
+var debut;
 
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
@@ -36,6 +38,7 @@ function main() {
 			divRules.style.display = "none";
 		}
 	});
+	document.getElementById('Theme').addEventListener('change', changerTheme);
 	cadre.addEventListener('keydown', demarrer);
 	cadre.addEventListener('click', demarrer);
 
@@ -54,9 +57,11 @@ function demarrer() {
 	});
 	placerPomme();
 	// pour faire bouger le serpent tout seul;
-	setInterval(function (e) {
+	GAMELOOP = setInterval(function (e) {
 		bouger(e);
 	}, jacques.VITESSE);
+	debut = Date.now();
+	setInterval(changerTemps, 1000);
 }
 
 /**
@@ -67,6 +72,8 @@ function init() {
 	effacerPomme(); //on efface la pomme
 	placerPomme(); //on en replace une
 	jacques = new serpent(); //on recreer un serpent
+	debut = Date.now();
+
 }
 
 /**
@@ -89,6 +96,7 @@ function dessinerGrille() {
 
 
 function bouger(event) {
+	// FIXME: les murs ne correspondent pas à ce qu'on voit.
 	var ancienneDirection = jacques.tete.direction;
 	var dir;
 	if (event == undefined) {
@@ -192,7 +200,8 @@ function serpent() {
 	//this.queue = new Position(0, 0, "DROITE");
 	this.taille = 1;
 	this.SCORE = 0;
-	this.VITESSE = 350; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
+	divScore.innerHTML = "votre score est de : " + this.SCORE;
+	this.VITESSE = 300; //la vitesse à laquelle va le serpent; pour aller plus vite, on décrémente la vitesse
 	this.positions = [];
 
 	this.positions.push(this.tete);
@@ -229,16 +238,11 @@ function serpent() {
  */
 function redraw() {
 	var imgCorps = document.getElementById('corps');
-	gamezone.strokeStyle = "black"; // couleur de la bordure;
-	gamezone.fillStyle = "#0F0"; // couleur de l'interieur;
-
 	dessinerGrille();
 	for (var corps of jacques.positions) {
 		if (corps.isTete) {
 			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * 15, corps.y * 15);
 		} else {
-			//gamezone.strokeRect(corps.x * TAILLE_CASE, corps.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
-			//gamezone.fillRect(corps.x * TAILLE_CASE, corps.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
 			gamezone.drawImage(imgCorps, corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		}
 	}
@@ -264,8 +268,13 @@ function collisionPomme() {
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
 		grille[jacques.tete.x][jacques.tete.y] = false;
 		jacques.SCORE += 10;
-		if (jacques.VITESSE > 20) {
-			jacques.VITESSE -= 20; //on accèlere;
+		if (jacques.VITESSE > 30) {
+			jacques.VITESSE -= 30; //on accèlere;
+			clearInterval(GAMELOOP);
+			GAMELOOP = setInterval(function (e) {
+				bouger(e);
+			}, jacques.VITESSE);
+
 		} //si on est à 20, c'est déjà très rapide !!!
 
 		effacerPomme();
@@ -308,5 +317,43 @@ function effacer() {
 
 
 function changerTheme(event) {
+	//TODO : changer la couleur.
+	console.log("thème changé");
+	switch (document.getElementById('Theme').value) {
+		case "BLUE":
+			document.body.style.background = "RGBA(46, 140, 207, 1.00)";
+			cadre.style.boxShadow = "0 0 40px rgb(207,112,44)";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		case "RED":
+			document.body.style.background = "rgb(115,52,52)";
+			cadre.style.boxShadow = "0 0 40px rgb(52,115,115)";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		case "SOLARIZED":
+			document.body.style.background = "#002b36";
+			cadre.style.boxShadow = "0 0 40px #cb4b16";
+			//cadre.style.background = "grey";
+			document.body.style.color = "#93a1a1";
+			break;
+		case "CLAIR":
+			document.body.style.background = "lightgrey";
+			cadre.style.boxShadow = "0 0 40px red";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		default:
+			document.body.style.background = "RGBA(38, 50, 56, 1.00)";
+			document.body.style.color = "white";
+			cadre.style.boxShadow = "0 0 40px green";
+			break;
+	}
+}
 
+function changerTemps() {
+	var duree = new Date(Date.now() - debut);
+	document.getElementById('temps')
+		.innerHTML = "Vous jouez depuis " + duree.getMinutes() + "m " + duree.getSeconds() + "s";
 }
