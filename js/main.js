@@ -25,9 +25,6 @@ function main() {
 	divScore = document.getElementById('score');
 	var divRules = document.getElementById('div_rules');
 	divRules.style.display = "none";
-	//la gamezone fait la taille de la grille;
-	//cadre.style.width = GRILLE_X * TAILLE_CASE + "px";
-	//cadre.style.height = GRILLE_Y * TAILLE_CASE + "px";
 
 	dessinerGrille();
 	//le bouton régles affiche les regles ou les cache.
@@ -104,6 +101,7 @@ function dessinerGrille() {
 function bouger(event) {
 	var ancienneDirection = jacques.tete.direction;
 	var dir;
+	var kill = false; //pour éviter d'appeler mourir plusieurs fois;
 	if (event == undefined) {
 		//console.log("tete : "+jacques.tete.x + " , "+jacques.tete.y);
 		for (var corps of jacques.positions) {
@@ -114,7 +112,7 @@ function bouger(event) {
 						//jacques.tete.y--;
 						corps.y--;
 					} else {
-						mourir();
+						kill = true;
 					}
 
 					break;
@@ -124,7 +122,7 @@ function bouger(event) {
 						corps.y++;
 
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 				case "GAUCHE":
@@ -133,7 +131,7 @@ function bouger(event) {
 						corps.x--;
 
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 				case "DROITE":
@@ -141,10 +139,11 @@ function bouger(event) {
 						//jacques.tete.x++;
 						corps.x++;
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 			}
+
 			ancienneDirection = corps.direction;
 			corps.direction = dir;
 			//on place serpent dans les cases ou il y a le serpent, pour gérer les collisions avec le corps.
@@ -152,6 +151,7 @@ function bouger(event) {
 				grille[corps.x][corps.y] = "serpent";
 			}
 		}
+		if (kill) mourir();
 	} else {
 		switch (event.keyCode) {
 			case 27:
@@ -214,8 +214,6 @@ function serpent() {
 
 	this.positions.push(this.tete);
 
-	//this.queue = this.positions[this.taille-1];
-
 	this.agrandir = function() {
 		var queue = this.positions[this.taille - 1]; //le tableau positions commence à 0 et la taille est à 1
 		this.taille++;
@@ -247,164 +245,164 @@ function pomme() {
 	this.x = Math.floor(Math.random() * GRILLE_X);
 	this.y = Math.floor(Math.random() * GRILLE_Y);
 	if (Math.random() > 0.85) { // on a 15% de chance qu la pomme soit un bonus;
-			this.txt = "grossepomme";
-			this.img = document.getElementById('grossepom');
+		this.txt = "grossepomme";
+		this.img = document.getElementById('grossepom');
+	} else {
+		this.txt = "pomme";
+		this.img = document.getElementById('pom');
+	}
+}
+
+
+/**
+ * dessine le corps du serpent.
+ * cette fonction est appelée à chaque mouvement du serpent.
+ * @return {void}
+ */
+function redraw() {
+	var imgCorps = document.getElementById('corps');
+	dessinerGrille();
+	for (var corps of jacques.positions) {
+		if (corps.isTete) {
+			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		} else {
-			this.txt = "pomme";
-			this.img = document.getElementById('pom');
+			gamezone.drawImage(imgCorps, corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		}
 	}
+}
 
+/**
+ * place une pomme sur le plateau
+ * @return {void}
+ */
+function placerPomme() {
+	fruit = new pomme();
+	grille[fruit.x][fruit.y] = fruit.txt;
+	gamezone.drawImage(fruit.img, fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE); //on dessine la pomme sur le canvas
+}
 
-	/**
-	 * dessine le corps du serpent.
-	 * cette fonction est appelée à chaque mouvement du serpent.
-	 * @return {void}
-	 */
-	function redraw() {
-		var imgCorps = document.getElementById('corps');
-		dessinerGrille();
-		for (var corps of jacques.positions) {
-			if (corps.isTete) {
-				gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
-			} else {
-				gamezone.drawImage(imgCorps, corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
-			}
+/**
+ * teste si le serpent est sur une case pomme.
+ * @return {void }
+ */
+function collisionPomme() {
+	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
+		console.log("pomme");
+		jacques.SCORE += 10;
+		if (jacques.VITESSE > 30) {
+			jacques.VITESSE -= 20; //on accèlere;
+			clearInterval(GAMELOOP);
+			GAMELOOP = setInterval(function(e) {
+				bouger(e);
+			}, jacques.VITESSE);
+			jacques.agrandir();
+			effacerPomme();
+			placerPomme();
+		}
+	} else if (grille[jacques.tete.x][jacques.tete.y] == "grossepomme") {
+		console.log("grosse pomme");
+		jacques.score += 50;
+		if (jacques.VITESSE > 60) {
+			jacques.vitesse -= 50;
+			clearInterval(GAMELOOP);
+			GAMELOOP = setInterval(function(e) {
+				bouger(e);
+			}, jacques.VITESSE);
+			//on agrandit de 3 fois;
+			jacques.agrandir();
+			jacques.agrandir();
+			jacques.agrandir();
+			effacerPomme();
+			placerPomme();
 		}
 	}
+	divScore.innerHTML = "Votre score est de : " + jacques.SCORE;
+}
 
-	/**
-	 * place une pomme sur le plateau
-	 * @return {void}
-	 */
-	function placerPomme() {
-		fruit = new pomme();
+
+function collisionCorps() {
+	if (grille[jacques.tete.x][jacques.tete.y] == "serpent") {
+		mourir();
+	}
+}
+
+
+function mourir() {
+	alert("vous avez perdu");
+	init();
+}
+
+function effacerPomme() {
+	grille[fruit.x][fruit.y] = false;
+	gamezone.clearRect(fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+}
+
+function effacer() {
+	gamezone.beginPath();
+	gamezone.clearRect(0, 0, GRILLE_X * TAILLE_CASE, GRILLE_Y * TAILLE_CASE);
+	for (var i = 0; i < grille.length; i++) {
+		grille[i] = new Array(GRILLE_Y).fill(false);
+	}
+	if (fruit !== undefined && fruit.x !== undefined && fruit.y !== undefined) { //si il y avait une pomme, on la redessine
 		grille[fruit.x][fruit.y] = fruit.txt;
 		gamezone.drawImage(fruit.img, fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE); //on dessine la pomme sur le canvas
 	}
+}
 
-	/**
-	 * teste si le serpent est sur une case pomme.
-	 * @return {void }
-	 */
-	function collisionPomme() {
-		if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
-			console.log("pomme");
-			jacques.SCORE += 10;
-			if (jacques.VITESSE > 30) {
-				jacques.VITESSE -= 20; //on accèlere;
-				clearInterval(GAMELOOP);
-				GAMELOOP = setInterval(function(e) {
-					bouger(e);
-				}, jacques.VITESSE);
-				jacques.agrandir();
-				effacerPomme();
-				placerPomme();
-			}
-		} else if (grille[jacques.tete.x][jacques.tete.y] == "grossepomme") {
-			console.log("grosse pomme");
-			jacques.score += 50;
-			if (jacques.VITESSE > 60) {
-				jacques.vitesse -= 50;
-				clearInterval(GAMELOOP);
-				GAMELOOP = setInterval(function(e) {
-					bouger(e);
-				}, jacques.VITESSE);
-				//on agrandit de 3 fois;
-				jacques.agrandir();
-				jacques.agrandir();
-				jacques.agrandir();
-				effacerPomme();
-				placerPomme();
-			}
-		}
-		divScore.innerHTML = "Votre score est de : " + jacques.SCORE;
+
+function changerTheme(event) {
+	//TODO : changer la couleur.
+	console.log("thème changé");
+	switch (document.getElementById('Theme').value) {
+		case "BLUE":
+			document.body.style.background = "RGBA(46, 140, 207, 1.00)";
+			cadre.style.boxShadow = "0 0 40px rgb(207,112,44)";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		case "RED":
+			document.body.style.background = "rgb(115,52,52)";
+			cadre.style.boxShadow = "0 0 40px rgb(52,115,115)";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		case "SOLARIZED":
+			document.body.style.background = "#002b36";
+			cadre.style.boxShadow = "0 0 40px #cb4b16";
+			//cadre.style.background = "grey";
+			document.body.style.color = "#93a1a1";
+			break;
+		case "CLAIR":
+			document.body.style.background = "lightgrey";
+			cadre.style.boxShadow = "0 0 40px red";
+			//cadre.style.background = "grey";
+			document.body.style.color = "black";
+			break;
+		default:
+			document.body.style.background = "RGBA(38, 50, 56, 1.00)";
+			document.body.style.color = "white";
+			cadre.style.boxShadow = "0 0 40px green";
+			break;
 	}
+}
 
+function changerTemps() {
+	duree += 1000; //comme la fonction est appelée toute les secondes, on ajoute 1 à chaque appel.
+	var date = new Date(duree);
+	document.getElementById('temps')
+		.innerHTML = "Vous jouez depuis " + date.getMinutes() + "m " + date.getSeconds() + "s";
+}
 
-	function collisionCorps() {
-		if (grille[jacques.tete.x][jacques.tete.y] == "serpent") {
-			mourir();
-		}
-	}
+function pause() {
+	alert("c'est l'heure du café ? ");
+	clearInterval(TIMER);
+}
 
+function finPause() {
+	//on reprend le timer;
+	TIMER = setInterval(changerTemps, 1000);
+}
 
-	function mourir() {
-		alert("vous avez perdu");
-		init();
-	}
-
-	function effacerPomme() {
-		grille[fruit.x][fruit.y] = false;
-		gamezone.clearRect(fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
-	}
-
-	function effacer() {
-		gamezone.beginPath();
-		gamezone.clearRect(0, 0, GRILLE_X * TAILLE_CASE, GRILLE_Y * TAILLE_CASE);
-		for (var i = 0; i < grille.length; i++) {
-			grille[i] = new Array(GRILLE_Y).fill(false);
-		}
-		if (fruit !== undefined && fruit.x !== undefined && fruit.y !== undefined) { //si il y avait une pomme, on la redessine
-			grille[fruit.x][fruit.y] = fruit.txt;
-			gamezone.drawImage(fruit.img, fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE); //on dessine la pomme sur le canvas
-		}
-	}
-
-
-	function changerTheme(event) {
-		//TODO : changer la couleur.
-		console.log("thème changé");
-		switch (document.getElementById('Theme').value) {
-			case "BLUE":
-				document.body.style.background = "RGBA(46, 140, 207, 1.00)";
-				cadre.style.boxShadow = "0 0 40px rgb(207,112,44)";
-				//cadre.style.background = "grey";
-				document.body.style.color = "black";
-				break;
-			case "RED":
-				document.body.style.background = "rgb(115,52,52)";
-				cadre.style.boxShadow = "0 0 40px rgb(52,115,115)";
-				//cadre.style.background = "grey";
-				document.body.style.color = "black";
-				break;
-			case "SOLARIZED":
-				document.body.style.background = "#002b36";
-				cadre.style.boxShadow = "0 0 40px #cb4b16";
-				//cadre.style.background = "grey";
-				document.body.style.color = "#93a1a1";
-				break;
-			case "CLAIR":
-				document.body.style.background = "lightgrey";
-				cadre.style.boxShadow = "0 0 40px red";
-				//cadre.style.background = "grey";
-				document.body.style.color = "black";
-				break;
-			default:
-				document.body.style.background = "RGBA(38, 50, 56, 1.00)";
-				document.body.style.color = "white";
-				cadre.style.boxShadow = "0 0 40px green";
-				break;
-		}
-	}
-
-	function changerTemps() {
-		duree += 1000; //comme la fonction est appelée toute les secondes, on ajoute 1 à chaque appel.
-		var date = new Date(duree);
-		document.getElementById('temps')
-			.innerHTML = "Vous jouez depuis " + date.getMinutes() + "m " + date.getSeconds() + "s";
-	}
-
-	function pause() {
-		alert("c'est l'heure du café ? ");
-		clearInterval(TIMER);
-	}
-
-	function finPause() {
-		//on reprend le timer;
-		TIMER = setInterval(changerTemps, 1000);
-	}
-
-	var easter_egg = new Konami(function () {
-		alert("vous avez gagné ");
-	});
+var easter_egg = new Konami(function() {
+	alert("vous avez gagné ");
+});
