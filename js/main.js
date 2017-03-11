@@ -104,6 +104,7 @@ function dessinerGrille() {
 function bouger(event) {
 	var ancienneDirection = jacques.tete.direction;
 	var dir;
+	var kill = false; //pour éviter d'appeler mourir plusieurs fois;
 	if (event == undefined) {
 		//console.log("tete : "+jacques.tete.x + " , "+jacques.tete.y);
 		for (var corps of jacques.positions) {
@@ -114,7 +115,7 @@ function bouger(event) {
 						//jacques.tete.y--;
 						corps.y--;
 					} else {
-						mourir();
+						kill = true;
 					}
 
 					break;
@@ -124,7 +125,7 @@ function bouger(event) {
 						corps.y++;
 
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 				case "GAUCHE":
@@ -133,7 +134,7 @@ function bouger(event) {
 						corps.x--;
 
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 				case "DROITE":
@@ -141,10 +142,11 @@ function bouger(event) {
 						//jacques.tete.x++;
 						corps.x++;
 					} else {
-						mourir();
+						kill = true;
 					}
 					break;
 			}
+
 			ancienneDirection = corps.direction;
 			corps.direction = dir;
 			//on place serpent dans les cases ou il y a le serpent, pour gérer les collisions avec le corps.
@@ -152,6 +154,7 @@ function bouger(event) {
 				grille[corps.x][corps.y] = "serpent";
 			}
 		}
+		if(kill) mourir();
 	} else {
 		switch (event.keyCode) {
 			case 27:
