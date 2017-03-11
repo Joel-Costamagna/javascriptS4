@@ -6,8 +6,7 @@ var grille;
 var cadre;
 var gamezone;
 var jacques; //le serpent
-var pommeX; //coord x de la pomme
-var pommeY; //coord y de le pomme
+var fruit;
 var divScore;
 var GAMELOOP;
 var debut;
@@ -239,6 +238,23 @@ function serpent() {
 }
 
 /**
+ * @constructor pomme
+ *
+ */
+function pomme(){
+	this.x = Math.floor(Math.random() * GRILLE_X);
+	this.y = Math.floor(Math.random() * GRILLE_Y);
+	if(Math.random() > 0.7){ // on a 30% de chance qu la pomme soit un bonus;
+		this.txt = "grossepomme";
+		this.img = document.getElementById('grossepom');
+	}else {
+		this.txt = "pomme";
+		this.img = document.getElementById('pom');
+	}
+}
+
+
+/**
  * dessine le corps du serpent.
  * cette fonction est appelée à chaque mouvement du serpent.
  * @return {void}
@@ -260,11 +276,9 @@ function redraw() {
  * @return {void}
  */
 function placerPomme() {
-	pommeY = Math.floor(Math.random() * GRILLE_Y); //x de la pomme choisi aléatoirement
-	pommeX = Math.floor(Math.random() * GRILLE_X); //y de la pomme choisi aléatoirement
-	grille[pommeX][pommeY] = "pomme";
-	var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
-	gamezone.drawImage(imgPomme, pommeX * TAILLE_CASE, pommeY * TAILLE_CASE); //on dessine la pomme sur le canvas
+	fruit = new pomme();
+	grille[fruit.x][fruit.y] = fruit.txt;
+	gamezone.drawImage(fruit.img, fruit.x * TAILLE_CASE, fruit.y * TAILLE_CASE); //on dessine la pomme sur le canvas
 }
 
 /**
@@ -272,21 +286,34 @@ function placerPomme() {
  * @return {void }
  */
 function collisionPomme() {
+	console.log(fruit);
+	console.log(grille);
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
-		grille[jacques.tete.x][jacques.tete.y] = false;
+		console.log("pomme");
 		jacques.SCORE += 10;
 		if (jacques.VITESSE > 30) {
-			jacques.VITESSE -= 30; //on accèlere;
+			jacques.VITESSE -= 20; //on accèlere;
 			clearInterval(GAMELOOP);
 			GAMELOOP = setInterval(function (e) {
 				bouger(e);
 			}, jacques.VITESSE);
-
-		} //si on est à 20, c'est déjà très rapide !!!
-
+			jacques.agrandir();
+		} else if (grille[jacques.tete.x][jacques.tete.y] == "grossepomme") {
+			console.log("grosse pomme");
+		jacques.score += 50;
+		if(jacques.VITESSE > 60) {
+			jacques.vitesse -= 50;
+			GAMELOOP = setInterval(function (e) {
+				bouger(e);
+			}, jacques.VITESSE);
+			//on agrandit de 3 fois;
+			jacques.agrandir();
+			jacques.agrandir();
+			jacques.agrandir();
+		}
+	}
 		effacerPomme();
 		placerPomme();
-		jacques.agrandir();
 		divScore.innerHTML = "Votre score est de : " + jacques.SCORE;
 	}
 }
@@ -304,8 +331,8 @@ function mourir() {
 }
 
 function effacerPomme() {
-	grille[pommeX][pommeY] = false;
-	gamezone.clearRect(pommeX * TAILLE_CASE, pommeY * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
+	grille[pomme.x][pomme.y] = false;
+	gamezone.clearRect(pomme.x * TAILLE_CASE, pomme.y * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE);
 }
 
 function effacer() {
@@ -314,11 +341,9 @@ function effacer() {
 	for (var i = 0; i < grille.length; i++) {
 		grille[i] = new Array(GRILLE_Y).fill(false);
 	}
-
-	if (pommeX !== undefined && pommeY != undefined) { //si il y a une pomme, on la redessine
-		grille[pommeX][pommeY] = "pomme";
-		var imgPomme = document.getElementById('pom'); //on récupère l'image de la pomme
-		gamezone.drawImage(imgPomme, pommeX * TAILLE_CASE, pommeY * TAILLE_CASE); //on dessine la pomme sur le canvas
+	if (pomme.x !== undefined) { //si il y avait une pomme, on la redessine
+		grille[pomme.x][pomme.y] = pomme.txt;
+		gamezone.drawImage(pomme.img, pomme.x * TAILLE_CASE, pomme.y * TAILLE_CASE); //on dessine la pomme sur le canvas
 	}
 }
 
