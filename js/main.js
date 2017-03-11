@@ -246,13 +246,7 @@ function serpent() {
 function pomme() {
 	this.x = Math.floor(Math.random() * GRILLE_X);
 	this.y = Math.floor(Math.random() * GRILLE_Y); <<
-	<< << < HEAD
 	if (Math.random() > 0.85) { // on a 15% de chance qu la pomme soit un bonus;
-		===
-		=== =
-		if (Math.random() > 0.7) { // on a 30% de chance qu la pomme soit un bonus;
-			>>>
-			>>> > master
 			this.txt = "grossepomme";
 			this.img = document.getElementById('grossepom');
 		} else {
@@ -411,6 +405,4 @@ function pomme() {
 		TIMER = setInterval(changerTemps, 1000);
 	}
 
-	var easter_egg = new Konami(function() {
-		alert('YOU WON MOTHERFUCKER');
-	});
+	var easter_egg = new Konami("google.com");
