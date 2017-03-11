@@ -9,7 +9,8 @@ var jacques; //le serpent
 var fruit;
 var divScore;
 var GAMELOOP;
-var debut;
+var TIMER;
+var duree;
 
 /**
  * fonction main appelé UNIQUEMENT lors de la première session de jeu et qui init le plateau
@@ -59,8 +60,8 @@ function demarrer() {
 	GAMELOOP = setInterval(function (e) {
 		bouger(e);
 	}, jacques.VITESSE);
-	debut = Date.now();
-	setInterval(changerTemps, 1000);
+	duree = 0;
+	TIMER = setInterval(changerTemps, 1000);
 }
 
 /**
@@ -76,8 +77,7 @@ function init() {
 	GAMELOOP = setInterval(function (e) {
 		bouger(e);
 	}, jacques.VITESSE);
-
-	debut = Date.now();
+	duree=0;
 
 }
 
@@ -104,7 +104,7 @@ function bouger(event) {
 	var ancienneDirection = jacques.tete.direction;
 	var dir;
 	if (event == undefined) {
-		console.log("tete : "+jacques.tete.x + " , "+jacques.tete.y);
+		//console.log("tete : "+jacques.tete.x + " , "+jacques.tete.y);
 		for (var corps of jacques.positions) {
 			dir = ancienneDirection;
 			switch (corps.direction) {
@@ -154,7 +154,8 @@ function bouger(event) {
 	} else {
 		switch (event.keyCode) {
 			case 27:
-				alert("PAUSE");
+				pause();
+				finPause();
 				break;
 
 			case 81:
@@ -286,8 +287,6 @@ function placerPomme() {
  * @return {void }
  */
 function collisionPomme() {
-	console.log(fruit);
-	console.log(grille);
 	if (grille[jacques.tete.x][jacques.tete.y] == "pomme") {
 		console.log("pomme");
 		jacques.SCORE += 10;
@@ -385,7 +384,18 @@ function changerTheme(event) {
 }
 
 function changerTemps() {
-	var duree = new Date(Date.now() - debut);
+	duree += 1000; //comme la fonction est appelée toute les secondes, on ajoute 1 à chaque appel.
+	var date = new Date(duree);
 	document.getElementById('temps')
-		.innerHTML = "Vous jouez depuis " + duree.getMinutes() + "m " + duree.getSeconds() + "s";
+		.innerHTML = "Vous jouez depuis " + date.getMinutes() + "m " + date.getSeconds() + "s";
+}
+
+function pause () {
+	alert("c'est l'heure du café ? ");
+	clearInterval(TIMER);
+}
+
+function finPause () {
+	//on reprend le timer;
+	TIMER = setInterval( changerTemps, 1000);
 }
