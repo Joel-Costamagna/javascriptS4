@@ -1,4 +1,4 @@
-const GRILLE_Y = 31; //nombre de lignes
+const GRILLE_Y = 30; //nombre de lignes
 const GRILLE_X = 60; //nombre de colonnes
 const TAILLE_CASE = 15;
 
@@ -72,6 +72,12 @@ function init() {
 	effacerPomme(); //on efface la pomme
 	placerPomme(); //on en replace une
 	jacques = new serpent(); //on recreer un serpent
+	//reset de la vitesse;
+	clearInterval(GAMELOOP);
+	GAMELOOP = setInterval(function (e) {
+		bouger(e);
+	}, jacques.VITESSE);
+
 	debut = Date.now();
 
 }
@@ -82,29 +88,29 @@ function init() {
 function dessinerGrille() {
 	effacer();
 	gamezone.strokeStyle = "#000";
-	for (var x = 0; x < GRILLE_X * 15; x += 15) {
+	for (var x = 0; x < GRILLE_X * TAILLE_CASE; x += TAILLE_CASE) {
 		gamezone.moveTo(x, 0);
-		gamezone.lineTo(x, GRILLE_Y * 15);
+		gamezone.lineTo(x, GRILLE_Y * TAILLE_CASE);
 	}
 
-	for (var y = 0; y < GRILLE_Y * 15; y += 15) {
+	for (var y = 0; y < GRILLE_Y * TAILLE_CASE; y += TAILLE_CASE) {
 		gamezone.moveTo(0, y);
-		gamezone.lineTo(GRILLE_X * 15, y);
+		gamezone.lineTo(GRILLE_X * TAILLE_CASE, y);
 	}
 	gamezone.stroke();
 }
 
 
 function bouger(event) {
-	// FIXME: les murs ne correspondent pas à ce qu'on voit.
 	var ancienneDirection = jacques.tete.direction;
 	var dir;
 	if (event == undefined) {
+		console.log("tete : "+jacques.tete.x + " , "+jacques.tete.y);
 		for (var corps of jacques.positions) {
 			dir = ancienneDirection;
 			switch (corps.direction) {
 				case "HAUT":
-					if (jacques.tete.y - 1 > 0) {
+					if (jacques.tete.y > 0) {
 						//jacques.tete.y--;
 						corps.y--;
 					} else {
@@ -113,7 +119,7 @@ function bouger(event) {
 
 					break;
 				case "BAS":
-					if (jacques.tete.y - 1 < GRILLE_Y - 1) {
+					if (jacques.tete.y + 1 < GRILLE_Y) {
 						//jacques.tete.y++;
 						corps.y++;
 
@@ -122,7 +128,7 @@ function bouger(event) {
 					}
 					break;
 				case "GAUCHE":
-					if (jacques.tete.x - 1 > 0) {
+					if (jacques.tete.x > 0) {
 						//jacques.tete.x--;
 						corps.x--;
 
@@ -131,7 +137,7 @@ function bouger(event) {
 					}
 					break;
 				case "DROITE":
-					if (jacques.tete.x + 1 < GRILLE_X - 1) {
+					if (jacques.tete.x + 1 < GRILLE_X) {
 						//jacques.tete.x++;
 						corps.x++;
 					} else {
@@ -141,6 +147,7 @@ function bouger(event) {
 			}
 			ancienneDirection = corps.direction;
 			corps.direction = dir;
+			//on place serpent dans les cases ou il y a le serpent, pour gérer les collisions avec le corps.
 			if (grille[corps.x][corps.y] != "pomme" && corps.isTete == false) {
 				grille[corps.x][corps.y] = "serpent";
 			}
@@ -241,7 +248,7 @@ function redraw() {
 	dessinerGrille();
 	for (var corps of jacques.positions) {
 		if (corps.isTete) {
-			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * 15, corps.y * 15);
+			gamezone.drawImage(document.getElementById('tete' + corps.direction), corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		} else {
 			gamezone.drawImage(imgCorps, corps.x * TAILLE_CASE, corps.y * TAILLE_CASE);
 		}
