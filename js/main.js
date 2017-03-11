@@ -405,4 +405,6 @@ function pomme() {
 		TIMER = setInterval(changerTemps, 1000);
 	}
 
-	var easter_egg = new Konami("google.com");
+	var easter_egg = new Konami(function () {
+		alert("vous avez gagné ");
+	});
