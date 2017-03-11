@@ -245,7 +245,7 @@ function serpent() {
  */
 function pomme() {
 	this.x = Math.floor(Math.random() * GRILLE_X);
-	this.y = Math.floor(Math.random() * GRILLE_Y); <<
+	this.y = Math.floor(Math.random() * GRILLE_Y);
 	if (Math.random() > 0.85) { // on a 15% de chance qu la pomme soit un bonus;
 			this.txt = "grossepomme";
 			this.img = document.getElementById('grossepom');
